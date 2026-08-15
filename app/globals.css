@@ -6,8 +6,15 @@
   color-scheme: light;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  background: #f6f7fb;
-  color: #172033;
+}
+
+::selection {
+  background: rgb(163 230 53);
+  color: rgb(9 9 11);
 }

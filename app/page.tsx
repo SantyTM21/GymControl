@@ -46,8 +46,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                id="registro"
-                href="/#registro"
+                href="/register"
                 className="bg-lime-400 px-6 py-3.5 text-center text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
               >
                 Comenzar ahora
@@ -113,8 +112,7 @@ export default function Home() {
             </h2>
           </div>
           <Link
-            id="acceso"
-            href="/#acceso"
+            href="/register"
             className="shrink-0 bg-zinc-950 px-7 py-4 text-sm font-bold text-white transition-colors hover:bg-zinc-800"
           >
             Crear mi cuenta

@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const navigation = [
   { label: "Inicio", href: "/" },
-  { label: "Rutinas", href: "/#rutinas" },
-  { label: "Ejercicios", href: "/#ejercicios" },
+  { label: "Rutinas", href: "/rutinas" },
+  { label: "Ejercicios", href: "/ejercicios" },
 ];
 
 export function Navbar() {
@@ -34,13 +34,13 @@ export function Navbar() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link
-            href="/#acceso"
+            href="/login"
             className="px-4 py-2 text-sm font-semibold text-white transition-colors hover:text-lime-400"
           >
             Iniciar sesion
           </Link>
           <Link
-            href="/#registro"
+            href="/register"
             className="bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
           >
             Registrarse
@@ -73,11 +73,11 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              <Link href="/#acceso" className="px-3 py-3 text-sm font-semibold text-white">
+              <Link href="/login" className="px-3 py-3 text-sm font-semibold text-white">
                 Iniciar sesion
               </Link>
               <Link
-                href="/#registro"
+                href="/register"
                 className="mt-2 bg-lime-400 px-3 py-3 text-center text-sm font-bold text-zinc-950"
               >
                 Registrarse

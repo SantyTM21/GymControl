@@ -20,16 +20,16 @@ export function Footer() {
           <h2 className="text-sm font-bold text-white">Explorar</h2>
           <div className="mt-4 flex flex-col gap-3 text-sm">
             <Link href="/" className="hover:text-lime-400">Inicio</Link>
-            <Link href="/#rutinas" className="hover:text-lime-400">Rutinas</Link>
-            <Link href="/#ejercicios" className="hover:text-lime-400">Ejercicios</Link>
+            <Link href="/rutinas" className="hover:text-lime-400">Rutinas</Link>
+            <Link href="/ejercicios" className="hover:text-lime-400">Ejercicios</Link>
           </div>
         </div>
 
         <div>
           <h2 className="text-sm font-bold text-white">Cuenta</h2>
           <div className="mt-4 flex flex-col gap-3 text-sm">
-            <Link href="/#acceso" className="hover:text-lime-400">Iniciar sesion</Link>
-            <Link href="/#registro" className="hover:text-lime-400">Registrarse</Link>
+            <Link href="/login" className="hover:text-lime-400">Iniciar sesion</Link>
+            <Link href="/register" className="hover:text-lime-400">Registrarse</Link>
           </div>
         </div>
       </div>

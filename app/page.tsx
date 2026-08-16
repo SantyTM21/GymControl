@@ -1,23 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
-const benefits = [
-  {
-    number: "01",
-    title: "Rutinas con direccion",
-    description: "Organiza cada sesion por objetivo y sigue un plan que puedas cumplir.",
-  },
-  {
-    number: "02",
-    title: "Progreso visible",
-    description: "Registra tu rendimiento y reconoce cada avance durante el proceso.",
-  },
-  {
-    number: "03",
-    title: "Todo en un lugar",
-    description: "Consulta ejercicios, entrenamientos y actividad sin perder el enfoque.",
-  },
-];
+import { homeBenefits } from "@/lib/mock-data";
 
 export default function Home() {
   return (
@@ -89,7 +72,7 @@ export default function Home() {
             <h2 className="mt-4 text-3xl font-black text-zinc-950 sm:text-5xl">Todo lo esencial. Sin distracciones.</h2>
           </div>
           <div className="mt-12 grid border-y border-zinc-300 md:grid-cols-3">
-            {benefits.map((benefit) => (
+            {homeBenefits.map((benefit) => (
               <article
                 key={benefit.number}
                 className="border-b border-zinc-300 py-8 last:border-b-0 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0 md:last:pr-0"

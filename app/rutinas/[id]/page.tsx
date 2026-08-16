@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getRoutineById, routines } from "@/lib/routines";
+import { StatCard } from "@/components/StatCard";
+import { getRoutineById, mockRoutines } from "@/lib/mock-data";
 
-type RoutineDetailPageProps = {
+interface RoutineDetailPageProps {
   params: {
     id: string;
   };
-};
+}
 
 export function generateStaticParams() {
-  return routines.map((routine) => ({ id: routine.id }));
+  return mockRoutines.map((routine) => ({ id: routine.id }));
 }
 
 export function generateMetadata({ params }: RoutineDetailPageProps): Metadata {
@@ -70,18 +71,9 @@ export default function RoutineDetailPage({ params }: RoutineDetailPageProps) {
             Esta rutina combina un ritmo sostenible con una seleccion equilibrada de ejercicios para trabajar el objetivo de forma consistente durante toda la sesion.
           </p>
           <div className="mt-10 grid gap-px bg-zinc-200 sm:grid-cols-3">
-            <div className="bg-zinc-50 p-5">
-              <p className="text-xs font-bold uppercase text-zinc-500">Nivel</p>
-              <p className="mt-2 font-bold text-zinc-950">{routine.nivel}</p>
-            </div>
-            <div className="bg-zinc-50 p-5">
-              <p className="text-xs font-bold uppercase text-zinc-500">Duracion</p>
-              <p className="mt-2 font-bold text-zinc-950">{routine.duracionMinutos} min</p>
-            </div>
-            <div className="bg-zinc-50 p-5">
-              <p className="text-xs font-bold uppercase text-zinc-500">Objetivo</p>
-              <p className="mt-2 font-bold text-zinc-950">{routine.objetivo}</p>
-            </div>
+            <StatCard label="Nivel" value={routine.nivel} />
+            <StatCard label="Duracion" value={`${routine.duracionMinutos} min`} />
+            <StatCard label="Objetivo" value={routine.objetivo} />
           </div>
         </div>
 

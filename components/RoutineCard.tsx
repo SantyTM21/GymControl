@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { Routine } from "@/types/routine";
+import type { Routine } from "@/types/domain";
 
-type RoutineCardProps = {
+export interface RoutineCardProps {
   routine: Routine;
-};
+}
 
 export function RoutineCard({ routine }: RoutineCardProps) {
   return (

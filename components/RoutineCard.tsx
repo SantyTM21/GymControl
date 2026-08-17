@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  routineLevelLabels,
+  routineObjectiveLabels,
+} from "@/lib/routine-options";
 import type { Routine } from "@/types/domain";
 
 export interface RoutineCardProps {
@@ -10,7 +14,7 @@ export function RoutineCard({ routine }: RoutineCardProps) {
     <article className="flex h-full flex-col border border-zinc-200 bg-white p-6 transition-colors hover:border-zinc-400 sm:p-7">
       <div className="flex items-center justify-between gap-4">
         <span className="bg-lime-100 px-3 py-1 text-xs font-bold text-lime-800">
-          {routine.nivel}
+          {routineLevelLabels[routine.nivel]}
         </span>
         <span className="text-sm font-semibold text-zinc-500">
           {routine.duracionMinutos} min
@@ -27,7 +31,7 @@ export function RoutineCard({ routine }: RoutineCardProps) {
           Objetivo
         </p>
         <p className="mt-1 text-sm font-semibold text-zinc-900">
-          {routine.objetivo}
+          {routineObjectiveLabels[routine.objetivo]}
         </p>
       </div>
 

@@ -1,5 +1,10 @@
 export type UserRole = "OWNER" | "CLIENT";
-export type RoutineLevel = "Principiante" | "Intermedio" | "Avanzado";
+export type RoutineLevel = "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
+export type RoutineObjective =
+  | "FUERZA"
+  | "HIPERTROFIA"
+  | "PERDIDA_PESO"
+  | "ACONDICIONAMIENTO";
 export type MembershipStatus = "Activa" | "Pausada" | "Vencida";
 export type PaymentStatus = "Pagado" | "Pendiente" | "Fallido";
 
@@ -17,7 +22,7 @@ export interface Routine {
   nombre: string;
   descripcion: string;
   nivel: RoutineLevel;
-  objetivo: string;
+  objetivo: RoutineObjective;
   duracionMinutos: number;
 }
 

@@ -38,8 +38,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Fuerza total",
     descripcion:
       "Una sesion de cuerpo completo centrada en los movimientos basicos para construir una base solida.",
-    nivel: "Intermedio",
-    objetivo: "Ganar fuerza",
+    nivel: "INTERMEDIO",
+    objetivo: "FUERZA",
     duracionMinutos: 55,
   },
   {
@@ -47,8 +47,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Inicio activo",
     descripcion:
       "Un recorrido accesible por los patrones fundamentales para empezar a entrenar con confianza.",
-    nivel: "Principiante",
-    objetivo: "Acondicionamiento general",
+    nivel: "PRINCIPIANTE",
+    objetivo: "ACONDICIONAMIENTO",
     duracionMinutos: 35,
   },
   {
@@ -56,8 +56,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Potencia inferior",
     descripcion:
       "Trabajo enfocado en piernas y gluteos para mejorar estabilidad, fuerza y capacidad atletica.",
-    nivel: "Intermedio",
-    objetivo: "Fortalecer tren inferior",
+    nivel: "INTERMEDIO",
+    objetivo: "HIPERTROFIA",
     duracionMinutos: 50,
   },
   {
@@ -65,8 +65,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Resistencia 360",
     descripcion:
       "Bloques dinamicos de trabajo y recuperacion para sostener el esfuerzo de principio a fin.",
-    nivel: "Avanzado",
-    objetivo: "Mejorar resistencia",
+    nivel: "AVANZADO",
+    objetivo: "PERDIDA_PESO",
     duracionMinutos: 45,
   },
   {
@@ -74,8 +74,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Torso esencial",
     descripcion:
       "Empujes y jalones equilibrados para desarrollar pecho, espalda, hombros y brazos.",
-    nivel: "Principiante",
-    objetivo: "Fortalecer tren superior",
+    nivel: "PRINCIPIANTE",
+    objetivo: "HIPERTROFIA",
     duracionMinutos: 40,
   },
   {
@@ -83,8 +83,8 @@ export const mockRoutines: Routine[] = [
     nombre: "Movilidad reset",
     descripcion:
       "Una sesion controlada para recuperar rangos de movimiento y aliviar la carga del entrenamiento.",
-    nivel: "Principiante",
-    objetivo: "Mejorar movilidad",
+    nivel: "PRINCIPIANTE",
+    objetivo: "ACONDICIONAMIENTO",
     duracionMinutos: 25,
   },
 ];
@@ -96,7 +96,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Empuje horizontal para desarrollar fuerza y control del tren superior.",
     grupoMuscular: "Pecho",
     equipamiento: "Barra y banco",
-    nivel: "Intermedio",
+    nivel: "INTERMEDIO",
   },
   {
     id: "remo-polea",
@@ -104,7 +104,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Jalon controlado que trabaja la espalda y la estabilidad escapular.",
     grupoMuscular: "Espalda",
     equipamiento: "Polea baja",
-    nivel: "Principiante",
+    nivel: "PRINCIPIANTE",
   },
   {
     id: "sentadilla-goblet",
@@ -112,7 +112,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Movimiento de fuerza y estabilidad para todo el tren inferior.",
     grupoMuscular: "Piernas",
     equipamiento: "Mancuerna",
-    nivel: "Principiante",
+    nivel: "PRINCIPIANTE",
   },
   {
     id: "press-militar",
@@ -120,7 +120,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Empuje vertical para fortalecer hombros y mejorar el control del core.",
     grupoMuscular: "Hombros",
     equipamiento: "Mancuernas",
-    nivel: "Intermedio",
+    nivel: "INTERMEDIO",
   },
   {
     id: "curl-martillo",
@@ -128,7 +128,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Trabajo complementario para biceps, antebrazos y agarre.",
     grupoMuscular: "Brazos",
     equipamiento: "Mancuernas",
-    nivel: "Principiante",
+    nivel: "PRINCIPIANTE",
   },
   {
     id: "plancha-frontal",
@@ -136,7 +136,7 @@ export const mockExercises: Exercise[] = [
     descripcion: "Ejercicio isometrico para postura y transferencia de fuerza.",
     grupoMuscular: "Core",
     equipamiento: "Peso corporal",
-    nivel: "Principiante",
+    nivel: "PRINCIPIANTE",
   },
 ];
 

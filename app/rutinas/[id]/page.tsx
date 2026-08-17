@@ -3,6 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StatCard } from "@/components/StatCard";
 import { getRoutineById, mockRoutines } from "@/lib/mock-data";
+import {
+  routineLevelLabels,
+  routineObjectiveLabels,
+} from "@/lib/routine-options";
 
 interface RoutineDetailPageProps {
   params: {
@@ -46,7 +50,9 @@ export default function RoutineDetailPage({ params }: RoutineDetailPageProps) {
           </Link>
           <div className="mt-10 max-w-4xl">
             <div className="flex flex-wrap items-center gap-3 text-sm font-bold">
-              <span className="bg-lime-400 px-3 py-1.5 text-zinc-950">{routine.nivel}</span>
+              <span className="bg-lime-400 px-3 py-1.5 text-zinc-950">
+                {routineLevelLabels[routine.nivel]}
+              </span>
               <span className="border border-zinc-700 px-3 py-1.5 text-zinc-200">
                 {routine.duracionMinutos} minutos
               </span>
@@ -66,14 +72,19 @@ export default function RoutineDetailPage({ params }: RoutineDetailPageProps) {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-lime-700">
             Enfoque de la rutina
           </p>
-          <h2 className="mt-4 text-3xl font-black text-zinc-950">{routine.objetivo}</h2>
+          <h2 className="mt-4 text-3xl font-black text-zinc-950">
+            {routineObjectiveLabels[routine.objetivo]}
+          </h2>
           <p className="mt-5 max-w-2xl leading-7 text-zinc-600">
             Esta rutina combina un ritmo sostenible con una seleccion equilibrada de ejercicios para trabajar el objetivo de forma consistente durante toda la sesion.
           </p>
           <div className="mt-10 grid gap-px bg-zinc-200 sm:grid-cols-3">
-            <StatCard label="Nivel" value={routine.nivel} />
+            <StatCard label="Nivel" value={routineLevelLabels[routine.nivel]} />
             <StatCard label="Duracion" value={`${routine.duracionMinutos} min`} />
-            <StatCard label="Objetivo" value={routine.objetivo} />
+            <StatCard
+              label="Objetivo"
+              value={routineObjectiveLabels[routine.objetivo]}
+            />
           </div>
         </div>
 

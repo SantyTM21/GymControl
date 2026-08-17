@@ -1,4 +1,5 @@
 import type { Exercise } from "@/types/domain";
+import { routineLevelLabels } from "@/lib/routine-options";
 
 export interface ExerciseCardProps {
   exercise: Exercise;
@@ -13,7 +14,7 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           {typeof index === "number" ? String(index + 1).padStart(2, "0") : exercise.grupoMuscular}
         </p>
         <span className="bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-600">
-          {exercise.nivel}
+          {routineLevelLabels[exercise.nivel]}
         </span>
       </div>
       <h2 className="mt-8 text-2xl font-black text-zinc-950">{exercise.nombre}</h2>

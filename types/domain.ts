@@ -1,4 +1,5 @@
-export type UserRole = "OWNER" | "CLIENT";
+export const USER_ROLES = ["OWNER", "CLIENT"] as const;
+export type UserRole = (typeof USER_ROLES)[number];
 export type RoutineLevel = "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
 export type RoutineObjective =
   | "FUERZA"

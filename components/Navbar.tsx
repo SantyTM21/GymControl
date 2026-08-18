@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { logout } from "@/app/auth/actions";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/auth/server";
 
 const navigation = [
   { label: "Inicio", href: "/" },
@@ -10,16 +9,7 @@ const navigation = [
 ];
 
 export async function Navbar() {
-  let isLoggedIn = false;
-
-  if (hasSupabaseEnv()) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    isLoggedIn = Boolean(user);
-  }
+  const isLoggedIn = Boolean(await getAuthenticatedUser());
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950 text-white">

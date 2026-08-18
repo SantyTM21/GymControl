@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { logout } from "@/app/auth/actions";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { createClient } from "@/lib/supabase/server";
 
 const navigation = [
   { label: "Inicio", href: "/" },
@@ -6,7 +9,18 @@ const navigation = [
   { label: "Ejercicios", href: "/ejercicios" },
 ];
 
-export function Navbar() {
+export async function Navbar() {
+  let isLoggedIn = false;
+
+  if (hasSupabaseEnv()) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    isLoggedIn = Boolean(user);
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950 text-white">
       <nav
@@ -32,20 +46,31 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm font-semibold text-white transition-colors hover:text-lime-400"
-          >
-            Iniciar sesion
-          </Link>
-          <Link
-            href="/register"
-            className="bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
-          >
-            Registrarse
-          </Link>
-        </div>
+        {isLoggedIn ? (
+          <form action={logout} className="hidden lg:block">
+            <button
+              type="submit"
+              className="bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
+            >
+              Cerrar sesion
+            </button>
+          </form>
+        ) : (
+          <div className="hidden items-center gap-3 lg:flex">
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-semibold text-white transition-colors hover:text-lime-400"
+            >
+              Iniciar sesion
+            </Link>
+            <Link
+              href="/register"
+              className="bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
+            >
+              Registrarse
+            </Link>
+          </div>
+        )}
 
         <details className="group relative lg:hidden">
           <summary
@@ -73,15 +98,28 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              <Link href="/login" className="px-3 py-3 text-sm font-semibold text-white">
-                Iniciar sesion
-              </Link>
-              <Link
-                href="/register"
-                className="mt-2 bg-lime-400 px-3 py-3 text-center text-sm font-bold text-zinc-950"
-              >
-                Registrarse
-              </Link>
+              {isLoggedIn ? (
+                <form action={logout}>
+                  <button
+                    type="submit"
+                    className="mt-2 w-full bg-lime-400 px-3 py-3 text-center text-sm font-bold text-zinc-950"
+                  >
+                    Cerrar sesion
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <Link href="/login" className="px-3 py-3 text-sm font-semibold text-white">
+                    Iniciar sesion
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="mt-2 bg-lime-400 px-3 py-3 text-center text-sm font-bold text-zinc-950"
+                  >
+                    Registrarse
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </details>

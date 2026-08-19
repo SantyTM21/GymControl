@@ -145,7 +145,7 @@ export const mockMemberships: Membership[] = [
     id: "membership-01",
     userId: "user-client-01",
     plan: "Mensual",
-    estado: "Activa",
+    estado: "ACTIVE",
     fechaInicio: "2026-08-01",
     fechaFin: "2026-08-31",
   },

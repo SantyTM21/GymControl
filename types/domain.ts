@@ -6,7 +6,8 @@ export type RoutineObjective =
   | "HIPERTROFIA"
   | "PERDIDA_PESO"
   | "ACONDICIONAMIENTO";
-export type MembershipStatus = "Activa" | "Pausada" | "Vencida";
+export const MEMBERSHIP_STATUSES = ["ACTIVE", "EXPIRED", "CANCELLED"] as const;
+export type MembershipStatus = (typeof MEMBERSHIP_STATUSES)[number];
 export type PaymentStatus = "Pagado" | "Pendiente" | "Fallido";
 
 export interface UserProfile {

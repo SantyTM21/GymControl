@@ -74,15 +74,24 @@ export async function updateSession(request: NextRequest) {
 
   const requiredRole = requiredRoleForRoute(pathname);
 
-  if (requiredRole && user) {
+  if (isPrivateRoute(pathname) && user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, is_active")
       .eq("id", user.id)
       .maybeSingle();
     const role = profile?.role as UserRole | undefined;
 
-    if (role !== requiredRole) {
+    if (!profile?.is_active) {
+      return redirectWithCookies(
+        request,
+        response,
+        "/login",
+        "Tu cuenta esta desactivada. Contacta al gimnasio.",
+      );
+    }
+
+    if (requiredRole && role !== requiredRole) {
       return redirectWithCookies(
         request,
         response,

@@ -1,4 +1,4 @@
-import { requireAuthenticatedUser, requireRole } from "@/lib/auth/server";
+import { requireProfile, requireRole } from "@/lib/auth/server";
 import type { UserRole } from "@/types/domain";
 
 type PrivateRoutePageProps = {
@@ -17,7 +17,7 @@ export async function PrivateRoutePage({
   if (allowedRoles?.length) {
     await requireRole(allowedRoles);
   } else {
-    await requireAuthenticatedUser();
+    await requireProfile();
   }
 
   return (

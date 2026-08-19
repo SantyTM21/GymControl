@@ -12,6 +12,8 @@ export type AuthProfile = {
   full_name: string;
   email: string;
   avatar_url: string | null;
+  is_active: boolean;
+  deactivated_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -39,7 +41,7 @@ export async function getProfile(): Promise<AuthProfile | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, role, full_name, email, avatar_url, created_at, updated_at")
+    .select("id, role, full_name, email, avatar_url, is_active, deactivated_at, created_at, updated_at")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -70,6 +72,10 @@ export async function requireProfile() {
 
   if (!profile) {
     redirect("/login?error=Debes iniciar sesion para continuar.");
+  }
+
+  if (!profile.is_active) {
+    redirect("/login?error=Tu cuenta esta desactivada. Contacta al gimnasio.");
   }
 
   return profile;

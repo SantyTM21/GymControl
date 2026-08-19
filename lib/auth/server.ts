@@ -65,11 +65,21 @@ export async function requireAuthenticatedUser() {
   return user;
 }
 
+export async function requireProfile() {
+  const profile = await getProfile();
+
+  if (!profile) {
+    redirect("/login?error=Debes iniciar sesion para continuar.");
+  }
+
+  return profile;
+}
+
 export async function requireRole(allowedRoles: UserRole[]) {
-  const role = await getRole();
+  const { role } = await requireProfile();
 
   if (!role || !allowedRoles.includes(role)) {
-    redirect("/login?error=No tienes permiso para acceder a esa seccion.");
+    redirect("/dashboard?error=No tienes permiso para acceder a esa seccion.");
   }
 
   return role;

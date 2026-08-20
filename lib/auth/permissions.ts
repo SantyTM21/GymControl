@@ -10,6 +10,7 @@ export const ROLE_PERMISSIONS = {
   ],
   CLIENT: [
     "view_own_membership",
+    "view_own_payments",
     "view_routines",
     "record_workout",
     "record_used_weight",

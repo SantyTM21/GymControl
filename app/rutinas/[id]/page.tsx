@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StatCard } from "@/components/StatCard";
-import { getRoutineById, mockRoutines } from "@/lib/mock-data";
+import { getPublishedRoutine } from "@/lib/routines/server";
 import {
   routineLevelLabels,
   routineObjectiveLabels,
@@ -14,12 +14,14 @@ interface RoutineDetailPageProps {
   };
 }
 
-export function generateStaticParams() {
-  return mockRoutines.map((routine) => ({ id: routine.id }));
+export const dynamic = "force-dynamic";
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("es-EC", { dateStyle: "medium" }).format(new Date(value));
 }
 
-export function generateMetadata({ params }: RoutineDetailPageProps): Metadata {
-  const routine = getRoutineById(params.id);
+export async function generateMetadata({ params }: RoutineDetailPageProps): Promise<Metadata> {
+  const routine = await getPublishedRoutine(params.id);
 
   if (!routine) {
     return { title: "Rutina no encontrada | GymControl" };
@@ -31,8 +33,8 @@ export function generateMetadata({ params }: RoutineDetailPageProps): Metadata {
   };
 }
 
-export default function RoutineDetailPage({ params }: RoutineDetailPageProps) {
-  const routine = getRoutineById(params.id);
+export default async function RoutineDetailPage({ params }: RoutineDetailPageProps) {
+  const routine = await getPublishedRoutine(params.id);
 
   if (!routine) {
     notFound();
@@ -55,6 +57,9 @@ export default function RoutineDetailPage({ params }: RoutineDetailPageProps) {
               </span>
               <span className="border border-zinc-700 px-3 py-1.5 text-zinc-200">
                 {routine.duracionMinutos} minutos
+              </span>
+              <span className="border border-zinc-700 px-3 py-1.5 text-zinc-200">
+                Publicada {formatDate(routine.createdAt)}
               </span>
             </div>
             <h1 className="mt-6 text-4xl font-black leading-tight sm:text-6xl">

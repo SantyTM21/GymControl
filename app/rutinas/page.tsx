@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { RoutineExplorer } from "@/components/RoutineExplorer";
-import { mockRoutines } from "@/lib/mock-data";
+import { listPublishedRoutines } from "@/lib/routines/server";
 
 export const metadata: Metadata = {
   title: "Rutinas | GymControl",
   description: "Explora rutinas por nivel, objetivo y duracion.",
 };
 
-export default function RoutinesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function RoutinesPage() {
+  const routines = await listPublishedRoutines();
+
   return (
     <main className="bg-zinc-100">
       <PageHeader
@@ -18,7 +22,7 @@ export default function RoutinesPage() {
       />
 
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:px-10">
-        <RoutineExplorer routines={mockRoutines} />
+        <RoutineExplorer routines={routines} />
       </section>
     </main>
   );

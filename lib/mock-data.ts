@@ -41,6 +41,9 @@ export const mockRoutines: Routine[] = [
     nivel: "INTERMEDIO",
     objetivo: "FUERZA",
     duracionMinutos: 55,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-15T10:00:00.000Z",
+    publicado: true,
   },
   {
     id: "inicio-activo",
@@ -50,6 +53,9 @@ export const mockRoutines: Routine[] = [
     nivel: "PRINCIPIANTE",
     objetivo: "ACONDICIONAMIENTO",
     duracionMinutos: 35,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-16T10:00:00.000Z",
+    publicado: true,
   },
   {
     id: "potencia-inferior",
@@ -59,6 +65,9 @@ export const mockRoutines: Routine[] = [
     nivel: "INTERMEDIO",
     objetivo: "HIPERTROFIA",
     duracionMinutos: 50,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-17T10:00:00.000Z",
+    publicado: true,
   },
   {
     id: "resistencia-360",
@@ -68,6 +77,9 @@ export const mockRoutines: Routine[] = [
     nivel: "AVANZADO",
     objetivo: "PERDIDA_PESO",
     duracionMinutos: 45,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-18T10:00:00.000Z",
+    publicado: true,
   },
   {
     id: "torso-esencial",
@@ -77,6 +89,9 @@ export const mockRoutines: Routine[] = [
     nivel: "PRINCIPIANTE",
     objetivo: "HIPERTROFIA",
     duracionMinutos: 40,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-19T10:00:00.000Z",
+    publicado: true,
   },
   {
     id: "movilidad-reset",
@@ -86,6 +101,9 @@ export const mockRoutines: Routine[] = [
     nivel: "PRINCIPIANTE",
     objetivo: "ACONDICIONAMIENTO",
     duracionMinutos: 25,
+    createdBy: "user-owner-01",
+    createdAt: "2026-01-20T10:00:00.000Z",
+    publicado: true,
   },
 ];
 

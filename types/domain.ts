@@ -26,6 +26,9 @@ export interface Routine {
   nivel: RoutineLevel;
   objetivo: RoutineObjective;
   duracionMinutos: number;
+  createdBy: string;
+  createdAt: string;
+  publicado: boolean;
 }
 
 export interface Exercise {

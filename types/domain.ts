@@ -31,6 +31,17 @@ export interface Routine {
   publicado: boolean;
 }
 
+export interface RoutineExercise {
+  id: string;
+  routineId: string;
+  nombreEjercicio: string;
+  series: number;
+  repeticiones: string;
+  pesoSugerido: number | null;
+  descansoSegundos: number;
+  orden: number;
+}
+
 export interface Exercise {
   id: string;
   nombre: string;

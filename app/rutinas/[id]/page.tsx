@@ -91,6 +91,75 @@ export default async function RoutineDetailPage({ params }: RoutineDetailPagePro
               value={routineObjectiveLabels[routine.objetivo]}
             />
           </div>
+
+          <section className="mt-10">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-lime-700">
+                  Secuencia
+                </p>
+                <h3 className="mt-3 text-2xl font-black text-zinc-950">Ejercicios</h3>
+              </div>
+              <p className="font-mono text-sm font-black text-zinc-950">
+                {routine.ejercicios.length} movimientos
+              </p>
+            </div>
+
+            {routine.ejercicios.length > 0 ? (
+              <div className="mt-5 divide-y divide-zinc-100 border border-zinc-200">
+                {routine.ejercicios.map((exercise) => (
+                  <article
+                    key={exercise.id}
+                    className="grid gap-4 bg-white px-4 py-4 md:grid-cols-[56px_minmax(0,1fr)_repeat(4,110px)]"
+                  >
+                    <div className="font-mono text-2xl font-black tabular-nums text-lime-700">
+                      {String(exercise.orden).padStart(2, "0")}
+                    </div>
+                    <div>
+                      <h4 className="font-black text-zinc-950">{exercise.nombreEjercicio}</h4>
+                      <p className="mt-1 text-sm font-semibold text-zinc-500">
+                        {exercise.series} series / {exercise.repeticiones} reps
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                        Peso
+                      </p>
+                      <p className="mt-1 font-semibold text-zinc-900">
+                        {exercise.pesoSugerido === null ? "Libre" : `${exercise.pesoSugerido} kg`}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                        Descanso
+                      </p>
+                      <p className="mt-1 font-semibold text-zinc-900">
+                        {exercise.descansoSegundos}s
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                        Series
+                      </p>
+                      <p className="mt-1 font-semibold text-zinc-900">{exercise.series}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                        Reps
+                      </p>
+                      <p className="mt-1 font-semibold text-zinc-900">
+                        {exercise.repeticiones}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-5 border border-zinc-200 bg-zinc-50 px-5 py-8 text-center">
+                <p className="font-bold text-zinc-950">Esta rutina aun no tiene ejercicios.</p>
+              </div>
+            )}
+          </section>
         </div>
 
         <aside className="bg-lime-400 p-7 sm:p-8">

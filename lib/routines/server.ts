@@ -2,7 +2,12 @@ import "server-only";
 
 import { requireProfile } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
-import type { Routine, RoutineLevel, RoutineObjective } from "@/types/domain";
+import type {
+  Routine,
+  RoutineExercise,
+  RoutineLevel,
+  RoutineObjective,
+} from "@/types/domain";
 
 type DbRoutineLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 type DbRoutineObjective = "STRENGTH" | "HYPERTROPHY" | "WEIGHT_LOSS" | "CONDITIONING";
@@ -21,8 +26,25 @@ type DbRoutine = {
   updated_at: string;
 };
 
+type DbRoutineExercise = {
+  id: string;
+  routine_id: string;
+  name: string;
+  sets: number;
+  reps: string;
+  suggested_weight: number | null;
+  rest_seconds: number;
+  position: number;
+};
+
+export type RoutineWithExercises = Routine & {
+  ejercicios: RoutineExercise[];
+};
+
 const routineColumns =
   "id, owner_id, created_by, name, description, level, objective, duration_minutes, is_published, created_at, updated_at";
+const exerciseColumns =
+  "id, routine_id, name, sets, reps, suggested_weight, rest_seconds, position";
 
 const dbLevelToApp: Record<DbRoutineLevel, RoutineLevel> = {
   BEGINNER: "PRINCIPIANTE",
@@ -72,6 +94,44 @@ function toRoutine(routine: DbRoutine): Routine {
   };
 }
 
+function toRoutineExercise(exercise: DbRoutineExercise): RoutineExercise {
+  return {
+    id: exercise.id,
+    routineId: exercise.routine_id,
+    nombreEjercicio: exercise.name,
+    series: exercise.sets,
+    repeticiones: exercise.reps,
+    pesoSugerido: exercise.suggested_weight,
+    descansoSegundos: exercise.rest_seconds,
+    orden: exercise.position,
+  };
+}
+
+async function listExercisesByRoutineIds(routineIds: string[]) {
+  if (routineIds.length === 0) {
+    return new Map<string, RoutineExercise[]>();
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("routine_exercises")
+    .select(exerciseColumns)
+    .in("routine_id", routineIds)
+    .order("position", { ascending: true });
+
+  if (error) {
+    throw new Error(`No se pudieron listar ejercicios: ${error.message}`);
+  }
+
+  const byRoutine = new Map<string, RoutineExercise[]>();
+
+  for (const exercise of ((data ?? []) as DbRoutineExercise[]).map(toRoutineExercise)) {
+    byRoutine.set(exercise.routineId, [...(byRoutine.get(exercise.routineId) ?? []), exercise]);
+  }
+
+  return byRoutine;
+}
+
 export async function listPublishedRoutines() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -100,7 +160,17 @@ export async function getPublishedRoutine(id: string) {
     throw new Error(`No se pudo consultar la rutina: ${error.message}`);
   }
 
-  return data ? toRoutine(data as DbRoutine) : null;
+  if (!data) {
+    return null;
+  }
+
+  const routine = toRoutine(data as DbRoutine);
+  const exercises = await listExercisesByRoutineIds([routine.id]);
+
+  return {
+    ...routine,
+    ejercicios: exercises.get(routine.id) ?? [],
+  } satisfies RoutineWithExercises;
 }
 
 export async function listOwnerRoutines() {
@@ -121,5 +191,11 @@ export async function listOwnerRoutines() {
     throw new Error(`No se pudieron listar tus rutinas: ${error.message}`);
   }
 
-  return ((data ?? []) as DbRoutine[]).map(toRoutine);
+  const routines = ((data ?? []) as DbRoutine[]).map(toRoutine);
+  const exercises = await listExercisesByRoutineIds(routines.map((routine) => routine.id));
+
+  return routines.map((routine) => ({
+    ...routine,
+    ejercicios: exercises.get(routine.id) ?? [],
+  })) satisfies RoutineWithExercises[];
 }

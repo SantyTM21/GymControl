@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import {
+  createRoutineExercise,
+  deleteRoutineExercise,
   createRoutine,
   deleteRoutine,
   publishRoutine,
+  updateRoutineExercise,
   updateRoutine,
 } from "@/app/dashboard/rutinas/actions";
 import {
@@ -36,6 +39,10 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
   const routines = await listOwnerRoutines();
   const published = routines.filter((routine) => routine.publicado).length;
   const drafts = routines.length - published;
+  const exercisesCount = routines.reduce(
+    (count, routine) => count + routine.ejercicios.length,
+    0,
+  );
 
   return (
     <main className="min-h-[calc(100svh-4rem)] bg-zinc-100">
@@ -51,7 +58,7 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                 Crea borradores, edita planes y publica solo las rutinas listas para visitantes.
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-3 text-sm">
+            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
               <div className="border border-zinc-200 bg-zinc-50 px-4 py-3">
                 <p className="font-mono text-2xl font-black tabular-nums text-zinc-950">
                   {routines.length}
@@ -69,6 +76,12 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                   {drafts}
                 </p>
                 <p className="mt-1 font-semibold text-amber-800">Borradores</p>
+              </div>
+              <div className="border border-zinc-200 bg-zinc-50 px-4 py-3">
+                <p className="font-mono text-2xl font-black tabular-nums text-zinc-950">
+                  {exercisesCount}
+                </p>
+                <p className="mt-1 font-semibold text-zinc-600">Ejercicios</p>
               </div>
             </div>
           </div>
@@ -240,11 +253,15 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                     <p className="mt-1 font-mono font-black tabular-nums text-zinc-950">
                       {routine.duracionMinutos} min
                     </p>
+                    <p className="mt-1 text-xs font-semibold text-zinc-500">
+                      {routine.ejercicios.length} ejercicios
+                    </p>
                   </div>
                 </summary>
 
-                <div className="grid gap-5 border-t border-zinc-200 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_180px]">
-                  <form action={updateRoutine} className="grid gap-4">
+                <div className="border-t border-zinc-200 px-5 py-5">
+                  <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_180px]">
+                    <form action={updateRoutine} className="grid gap-4">
                     <input type="hidden" name="routineId" value={routine.id} />
                     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px]">
                       <div>
@@ -336,30 +353,251 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                         Guardar cambios
                       </button>
                     </div>
-                  </form>
+                    </form>
 
-                  <div className="grid content-start gap-3">
-                    {!routine.publicado ? (
-                      <form action={publishRoutine}>
+                    <div className="grid content-start gap-3">
+                      {!routine.publicado ? (
+                        <form action={publishRoutine}>
+                          <input type="hidden" name="routineId" value={routine.id} />
+                          <button
+                            type="submit"
+                            className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
+                          >
+                            Publicar
+                          </button>
+                        </form>
+                      ) : null}
+                      <form action={deleteRoutine}>
                         <input type="hidden" name="routineId" value={routine.id} />
                         <button
                           type="submit"
-                          className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
+                          className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
                         >
-                          Publicar
+                          Eliminar
                         </button>
                       </form>
-                    ) : null}
-                    <form action={deleteRoutine}>
+                    </div>
+                  </div>
+
+                  <section className="mt-6 border-t border-zinc-200 pt-5">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <h3 className="text-lg font-black text-zinc-950">Ejercicios</h3>
+                        <p className="text-sm text-zinc-600">
+                          Ordena editando el numero de orden de cada ejercicio.
+                        </p>
+                      </div>
+                      <p className="font-mono text-sm font-black text-zinc-950">
+                        {routine.ejercicios.length} total
+                      </p>
+                    </div>
+
+                    <form
+                      action={createRoutineExercise}
+                      className="mt-4 grid gap-3 border border-zinc-200 bg-zinc-50 p-4 lg:grid-cols-[minmax(180px,1fr)_90px_120px_120px_120px_90px]"
+                    >
                       <input type="hidden" name="routineId" value={routine.id} />
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Ejercicio
+                        </label>
+                        <input
+                          name="nombreEjercicio"
+                          type="text"
+                          required
+                          minLength={2}
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Series
+                        </label>
+                        <input
+                          name="series"
+                          type="number"
+                          min="1"
+                          step="1"
+                          required
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Reps
+                        </label>
+                        <input
+                          name="repeticiones"
+                          type="text"
+                          required
+                          placeholder="8-10"
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Peso
+                        </label>
+                        <input
+                          name="pesoSugerido"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="Opcional"
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Descanso
+                        </label>
+                        <input
+                          name="descansoSegundos"
+                          type="number"
+                          min="0"
+                          step="1"
+                          required
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Orden
+                        </label>
+                        <input
+                          name="orden"
+                          type="number"
+                          min="1"
+                          step="1"
+                          required
+                          defaultValue={routine.ejercicios.length + 1}
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                        />
+                      </div>
                       <button
                         type="submit"
-                        className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
+                        className="min-h-10 bg-lime-400 px-4 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300 lg:col-span-6"
                       >
-                        Eliminar
+                        Agregar ejercicio
                       </button>
                     </form>
-                  </div>
+
+                    <div className="mt-4 divide-y divide-zinc-100 border border-zinc-200">
+                      {routine.ejercicios.map((exercise) => (
+                        <div key={exercise.id} className="grid gap-3 bg-white p-4">
+                          <form
+                            action={updateRoutineExercise}
+                            className="grid gap-3 lg:grid-cols-[minmax(180px,1fr)_90px_120px_120px_120px_90px]"
+                          >
+                            <input type="hidden" name="routineId" value={routine.id} />
+                            <input type="hidden" name="exerciseId" value={exercise.id} />
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Ejercicio
+                              </label>
+                              <input
+                                name="nombreEjercicio"
+                                type="text"
+                                required
+                                minLength={2}
+                                defaultValue={exercise.nombreEjercicio}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Series
+                              </label>
+                              <input
+                                name="series"
+                                type="number"
+                                min="1"
+                                step="1"
+                                required
+                                defaultValue={exercise.series}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Reps
+                              </label>
+                              <input
+                                name="repeticiones"
+                                type="text"
+                                required
+                                defaultValue={exercise.repeticiones}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Peso
+                              </label>
+                              <input
+                                name="pesoSugerido"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                defaultValue={exercise.pesoSugerido ?? ""}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Descanso
+                              </label>
+                              <input
+                                name="descansoSegundos"
+                                type="number"
+                                min="0"
+                                step="1"
+                                required
+                                defaultValue={exercise.descansoSegundos}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Orden
+                              </label>
+                              <input
+                                name="orden"
+                                type="number"
+                                min="1"
+                                step="1"
+                                required
+                                defaultValue={exercise.orden}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              className="min-h-10 bg-zinc-950 px-4 text-sm font-black text-white transition-colors hover:bg-zinc-800 lg:col-span-6"
+                            >
+                              Guardar ejercicio
+                            </button>
+                          </form>
+                          <form action={deleteRoutineExercise}>
+                            <input type="hidden" name="routineId" value={routine.id} />
+                            <input type="hidden" name="exerciseId" value={exercise.id} />
+                            <button
+                              type="submit"
+                              className="min-h-10 w-full border border-red-200 bg-red-50 px-4 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
+                            >
+                              Eliminar ejercicio
+                            </button>
+                          </form>
+                        </div>
+                      ))}
+                    </div>
+
+                    {routine.ejercicios.length === 0 ? (
+                      <div className="mt-4 border border-zinc-200 bg-white px-4 py-6 text-center text-sm font-semibold text-zinc-600">
+                        Agrega ejercicios para construir la secuencia de esta rutina.
+                      </div>
+                    ) : null}
+                  </section>
                 </div>
               </details>
             ))}

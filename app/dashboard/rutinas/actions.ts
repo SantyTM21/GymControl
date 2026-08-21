@@ -34,6 +34,25 @@ function parseDuration(value: string) {
   return Number.isInteger(duration) && duration > 0 ? duration : null;
 }
 
+function parsePositiveInt(value: string) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function parseNonNegativeInt(value: string) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function parseOptionalWeight(value: string) {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
 async function requireOwnerProfile() {
   const profile = await requireProfile();
 
@@ -72,6 +91,46 @@ function readRoutineForm(formData: FormData) {
     duration_minutes: duration,
     is_published: isPublished,
   };
+}
+
+function readExerciseForm(formData: FormData) {
+  const name = field(formData, "nombreEjercicio");
+  const sets = parsePositiveInt(field(formData, "series"));
+  const reps = field(formData, "repeticiones");
+  const suggestedWeight = parseOptionalWeight(field(formData, "pesoSugerido"));
+  const restSeconds = parseNonNegativeInt(field(formData, "descansoSegundos"));
+  const position = parsePositiveInt(field(formData, "orden"));
+
+  if (name.length < 2) {
+    redirectToRoutines("error", "Ingresa un nombre de ejercicio valido.");
+  }
+
+  if (sets === null || !reps || suggestedWeight === undefined || restSeconds === null || position === null) {
+    redirectToRoutines("error", "Revisa series, repeticiones, peso, descanso y orden.");
+  }
+
+  return {
+    name,
+    sets,
+    reps,
+    suggested_weight: suggestedWeight,
+    rest_seconds: restSeconds,
+    position,
+  };
+}
+
+async function ensureOwnRoutine(routineId: string, ownerId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("routines")
+    .select("id")
+    .eq("id", routineId)
+    .eq("created_by", ownerId)
+    .maybeSingle();
+
+  if (error || !data) {
+    redirectToRoutines("error", error?.message ?? "No puedes modificar esa rutina.");
+  }
 }
 
 export async function createRoutine(formData: FormData) {
@@ -180,4 +239,89 @@ export async function deleteRoutine(formData: FormData) {
   revalidatePath("/rutinas");
   revalidatePath(`/rutinas/${routineId}`);
   redirectToRoutines("success", "Rutina eliminada correctamente.");
+}
+
+export async function createRoutineExercise(formData: FormData) {
+  const profile = await requireOwnerProfile();
+  const routineId = field(formData, "routineId");
+  const exercise = readExerciseForm(formData);
+
+  if (!validId(routineId)) {
+    redirectToRoutines("error", "Rutina invalida.");
+  }
+
+  await ensureOwnRoutine(routineId, profile.id);
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("routine_exercises").insert({
+    routine_id: routineId,
+    ...exercise,
+  });
+
+  if (error) {
+    redirectToRoutines("error", error.message);
+  }
+
+  revalidatePath("/dashboard/rutinas");
+  revalidatePath(`/rutinas/${routineId}`);
+  redirectToRoutines("success", "Ejercicio agregado correctamente.");
+}
+
+export async function updateRoutineExercise(formData: FormData) {
+  const profile = await requireOwnerProfile();
+  const routineId = field(formData, "routineId");
+  const exerciseId = field(formData, "exerciseId");
+  const exercise = readExerciseForm(formData);
+
+  if (!validId(routineId) || !validId(exerciseId)) {
+    redirectToRoutines("error", "Rutina o ejercicio invalido.");
+  }
+
+  await ensureOwnRoutine(routineId, profile.id);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("routine_exercises")
+    .update(exercise)
+    .eq("id", exerciseId)
+    .eq("routine_id", routineId)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    redirectToRoutines("error", error?.message ?? "No se pudo actualizar ese ejercicio.");
+  }
+
+  revalidatePath("/dashboard/rutinas");
+  revalidatePath(`/rutinas/${routineId}`);
+  redirectToRoutines("success", "Ejercicio actualizado correctamente.");
+}
+
+export async function deleteRoutineExercise(formData: FormData) {
+  const profile = await requireOwnerProfile();
+  const routineId = field(formData, "routineId");
+  const exerciseId = field(formData, "exerciseId");
+
+  if (!validId(routineId) || !validId(exerciseId)) {
+    redirectToRoutines("error", "Rutina o ejercicio invalido.");
+  }
+
+  await ensureOwnRoutine(routineId, profile.id);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("routine_exercises")
+    .delete()
+    .eq("id", exerciseId)
+    .eq("routine_id", routineId)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    redirectToRoutines("error", error?.message ?? "No se pudo eliminar ese ejercicio.");
+  }
+
+  revalidatePath("/dashboard/rutinas");
+  revalidatePath(`/rutinas/${routineId}`);
+  redirectToRoutines("success", "Ejercicio eliminado correctamente.");
 }

@@ -74,7 +74,12 @@ export interface WorkoutLog {
   id: string;
   userId: string;
   routineId: string;
+  routineExerciseId?: string;
   fecha: string;
+  ejercicio?: string;
+  seriesRealizadas?: number;
+  repeticiones?: number;
+  pesoUtilizado?: number;
   duracionMinutos: number;
   completado: boolean;
   notas: string | null;

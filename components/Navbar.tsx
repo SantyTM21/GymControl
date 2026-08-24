@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logout } from "@/app/auth/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import { getAuthenticatedUser } from "@/lib/auth/server";
 
 const navigation = [
@@ -38,12 +39,12 @@ export async function Navbar() {
 
         {isLoggedIn ? (
           <form action={logout} className="hidden lg:block">
-            <button
-              type="submit"
+            <SubmitButton
+              pendingLabel="Saliendo..."
               className="bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
             >
               Cerrar sesion
-            </button>
+            </SubmitButton>
           </form>
         ) : (
           <div className="hidden items-center gap-3 lg:flex">
@@ -90,12 +91,12 @@ export async function Navbar() {
               ))}
               {isLoggedIn ? (
                 <form action={logout}>
-                  <button
-                    type="submit"
+                  <SubmitButton
+                    pendingLabel="Saliendo..."
                     className="mt-2 w-full bg-lime-400 px-3 py-3 text-center text-sm font-bold text-zinc-950"
                   >
                     Cerrar sesion
-                  </button>
+                  </SubmitButton>
                 </form>
               ) : (
                 <>

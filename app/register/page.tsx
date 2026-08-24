@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { register } from "@/app/auth/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 
 export const metadata: Metadata = {
   title: "Crear cuenta | GymControl",
@@ -51,9 +52,12 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
               <label htmlFor="password" className="text-sm font-bold text-zinc-800">Contrasena</label>
               <input id="password" name="password" type="password" autoComplete="new-password" placeholder="Crea una contrasena" required minLength={6} className="mt-2 w-full border border-zinc-300 bg-white px-4 py-3 text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus:border-lime-600" />
             </div>
-            <button type="submit" className="w-full bg-zinc-950 px-5 py-3.5 text-sm font-bold text-white hover:bg-zinc-800">
+            <SubmitButton
+              pendingLabel="Creando cuenta..."
+              className="w-full bg-zinc-950 px-5 py-3.5 text-sm font-bold text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500"
+            >
               Registrarme
-            </button>
+            </SubmitButton>
           </form>
           <p className="mt-6 text-sm text-zinc-600">
             Ya tienes una cuenta?{" "}

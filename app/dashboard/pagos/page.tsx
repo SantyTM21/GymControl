@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createPayment, deletePayment, updatePayment } from "@/app/dashboard/pagos/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import { requireProfile } from "@/lib/auth/server";
 import { listPaymentMembershipOptions, listPayments } from "@/lib/payments/server";
 
@@ -182,12 +183,12 @@ export default async function PagosPage({ searchParams }: PagosPageProps) {
                   />
                 </div>
 
-                <button
-                  type="submit"
+                <SubmitButton
+                  pendingLabel="Registrando..."
                   className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
                 >
                   Registrar pago
-                </button>
+                </SubmitButton>
               </form>
             </div>
           ) : searchParams?.error || searchParams?.success ? (
@@ -349,22 +350,23 @@ export default async function PagosPage({ searchParams }: PagosPageProps) {
                             className="mt-2 w-full resize-y border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600"
                           />
                         </div>
-                        <button
-                          type="submit"
+                        <SubmitButton
+                          pendingLabel="Guardando..."
                           className="min-h-11 bg-zinc-950 px-5 text-sm font-black text-white transition-colors hover:bg-zinc-800"
                         >
                           Guardar cambios
-                        </button>
+                        </SubmitButton>
                       </form>
 
                       <form action={deletePayment} className="content-start">
                         <input type="hidden" name="paymentId" value={payment.id} />
-                        <button
-                          type="submit"
+                        <SubmitButton
+                          pendingLabel="Eliminando..."
+                          confirmMessage="Seguro que quieres eliminar este pago?"
                           className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
                         >
                           Eliminar pago
-                        </button>
+                        </SubmitButton>
                       </form>
                     </div>
                   ) : (

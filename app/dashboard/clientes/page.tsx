@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { deactivateClient, updateClient } from "@/app/dashboard/clientes/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import { getClient, listClients } from "@/lib/clients/server";
 
 export const metadata: Metadata = {
@@ -247,23 +248,24 @@ export default async function ClientesPage({ searchParams }: ClientesPageProps) 
                     className="mt-2 min-h-11 w-full border border-zinc-300 bg-zinc-50 px-4 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600 focus:bg-white"
                   />
                 </div>
-                <button
-                  type="submit"
+                <SubmitButton
+                  pendingLabel="Guardando..."
                   className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
                 >
                   Guardar cambios
-                </button>
+                </SubmitButton>
               </form>
 
               <form action={deactivateClient}>
                 <input type="hidden" name="clientId" value={selectedClient.id} />
-                <button
-                  type="submit"
+                <SubmitButton
                   disabled={!selectedClient.is_active}
+                  pendingLabel="Desactivando..."
+                  confirmMessage={`Seguro que quieres desactivar a ${selectedClient.full_name}?`}
                   className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:border-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400"
                 >
                   Desactivar cliente
-                </button>
+                </SubmitButton>
               </form>
             </div>
           ) : (

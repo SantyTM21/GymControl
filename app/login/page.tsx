@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 
 export const metadata: Metadata = {
   title: "Iniciar sesion | GymControl",
@@ -47,9 +48,12 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
               <label htmlFor="password" className="text-sm font-bold text-zinc-800">Contrasena</label>
               <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Tu contrasena" required className="mt-2 w-full border border-zinc-300 bg-white px-4 py-3 text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus:border-lime-600" />
             </div>
-            <button type="submit" className="w-full bg-lime-400 px-5 py-3.5 text-sm font-bold text-zinc-950 hover:bg-lime-300">
+            <SubmitButton
+              pendingLabel="Ingresando..."
+              className="w-full bg-lime-400 px-5 py-3.5 text-sm font-bold text-zinc-950 hover:bg-lime-300 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+            >
               Ingresar
-            </button>
+            </SubmitButton>
           </form>
           <p className="mt-6 text-sm text-zinc-600">
             Aun no tienes cuenta?{" "}

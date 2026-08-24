@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createMembership, renewMembership, updateMembership } from "@/app/dashboard/membresias/actions";
 import { MembershipStatusBadge } from "@/components/MembershipStatusBadge";
+import { SubmitButton } from "@/components/SubmitButton";
 import { listClients } from "@/lib/clients/server";
 import { getMembershipIndicator, listMemberships, membershipStatuses } from "@/lib/memberships/server";
 
@@ -186,12 +187,12 @@ export default async function MembresiasPage({ searchParams }: MembresiasPagePro
               </div>
             </div>
 
-            <button
-              type="submit"
+            <SubmitButton
+              pendingLabel="Creando..."
               className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
             >
               Crear membresia
-            </button>
+            </SubmitButton>
           </form>
         </aside>
 
@@ -295,12 +296,12 @@ export default async function MembresiasPage({ searchParams }: MembresiasPagePro
                           />
                         </div>
                       </div>
-                      <button
-                        type="submit"
+                      <SubmitButton
+                        pendingLabel="Guardando..."
                         className="min-h-11 bg-zinc-950 px-5 text-sm font-black text-white transition-colors hover:bg-zinc-800"
                       >
                         Guardar cambios
-                      </button>
+                      </SubmitButton>
                     </form>
 
                     <form action={renewMembership} className="grid content-start gap-4 border border-lime-200 bg-lime-50 p-4">
@@ -345,12 +346,12 @@ export default async function MembresiasPage({ searchParams }: MembresiasPagePro
                           />
                         </div>
                       </div>
-                      <button
-                        type="submit"
+                      <SubmitButton
+                        pendingLabel="Renovando..."
                         className="min-h-11 bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
                       >
                         Renovar
-                      </button>
+                      </SubmitButton>
                     </form>
                   </div>
                 </details>

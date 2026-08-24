@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createWorkoutLog } from "@/app/mi-rutina/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import { listClientWorkoutLogs, listClientWorkoutRoutines } from "@/lib/workouts/server";
 
 export const metadata: Metadata = {
@@ -191,13 +192,13 @@ export default async function MiRutinaPage({ searchParams }: MiRutinaPageProps) 
               />
             </div>
 
-            <button
-              type="submit"
+            <SubmitButton
+              pendingLabel="Registrando..."
               disabled={exerciseOptions.length === 0}
               className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
             >
               Registrar entrenamiento
-            </button>
+            </SubmitButton>
           </form>
         </aside>
 

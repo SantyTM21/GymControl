@@ -8,6 +8,7 @@ import {
   updateRoutineExercise,
   updateRoutine,
 } from "@/app/dashboard/rutinas/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import {
   routineLevelLabels,
   routineLevels,
@@ -194,12 +195,12 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
               </label>
             </div>
 
-            <button
-              type="submit"
+            <SubmitButton
+              pendingLabel="Creando..."
               className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
             >
               Crear rutina
-            </button>
+            </SubmitButton>
           </form>
         </aside>
 
@@ -346,12 +347,12 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                       <p className="text-xs font-semibold text-zinc-500">
                         Creada: {formatDate(routine.createdAt)} / ID creador: {routine.createdBy}
                       </p>
-                      <button
-                        type="submit"
+                      <SubmitButton
+                        pendingLabel="Guardando..."
                         className="min-h-11 bg-zinc-950 px-5 text-sm font-black text-white transition-colors hover:bg-zinc-800"
                       >
                         Guardar cambios
-                      </button>
+                      </SubmitButton>
                     </div>
                     </form>
 
@@ -359,23 +360,24 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                       {!routine.publicado ? (
                         <form action={publishRoutine}>
                           <input type="hidden" name="routineId" value={routine.id} />
-                          <button
-                            type="submit"
+                          <SubmitButton
+                            pendingLabel="Publicando..."
                             className="min-h-11 w-full bg-lime-400 px-5 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300"
                           >
                             Publicar
-                          </button>
+                          </SubmitButton>
                         </form>
                       ) : null}
                       <form action={deleteRoutine}>
                         <input type="hidden" name="routineId" value={routine.id} />
-                        <button
-                          type="submit"
-                          className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
-                        >
-                          Eliminar
-                        </button>
-                      </form>
+                      <SubmitButton
+                        pendingLabel="Eliminando..."
+                        confirmMessage={`Seguro que quieres eliminar la rutina ${routine.nombre}?`}
+                        className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
+                      >
+                        Eliminar
+                      </SubmitButton>
+                    </form>
                     </div>
                   </div>
 
@@ -474,12 +476,12 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                           className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
                         />
                       </div>
-                      <button
-                        type="submit"
+                      <SubmitButton
+                        pendingLabel="Agregando..."
                         className="min-h-10 bg-lime-400 px-4 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300 lg:col-span-6"
                       >
                         Agregar ejercicio
-                      </button>
+                      </SubmitButton>
                     </form>
 
                     <div className="mt-4 divide-y divide-zinc-100 border border-zinc-200">
@@ -571,22 +573,23 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                                 className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
                               />
                             </div>
-                            <button
-                              type="submit"
+                            <SubmitButton
+                              pendingLabel="Guardando..."
                               className="min-h-10 bg-zinc-950 px-4 text-sm font-black text-white transition-colors hover:bg-zinc-800 lg:col-span-6"
                             >
                               Guardar ejercicio
-                            </button>
+                            </SubmitButton>
                           </form>
                           <form action={deleteRoutineExercise}>
                             <input type="hidden" name="routineId" value={routine.id} />
                             <input type="hidden" name="exerciseId" value={exercise.id} />
-                            <button
-                              type="submit"
+                            <SubmitButton
+                              pendingLabel="Eliminando..."
+                              confirmMessage={`Seguro que quieres eliminar el ejercicio ${exercise.nombreEjercicio}?`}
                               className="min-h-10 w-full border border-red-200 bg-red-50 px-4 text-sm font-black text-red-700 transition-colors hover:bg-red-100"
                             >
                               Eliminar ejercicio
-                            </button>
+                            </SubmitButton>
                           </form>
                         </div>
                       ))}

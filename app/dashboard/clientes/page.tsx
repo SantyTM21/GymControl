@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { deactivateClient, updateClient } from "@/app/dashboard/clientes/actions";
+import {
+  activateClient,
+  deactivateClient,
+  updateClient,
+} from "@/app/dashboard/clientes/actions";
 import { SubmitButton } from "@/components/SubmitButton";
 import { getClient, listClients } from "@/lib/clients/server";
 
@@ -218,6 +222,7 @@ export default async function ClientesPage({ searchParams }: ClientesPageProps) 
                     type="text"
                     required
                     minLength={2}
+                    maxLength={100}
                     defaultValue={selectedClient.full_name}
                     className="mt-2 min-h-11 w-full border border-zinc-300 bg-zinc-50 px-4 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600 focus:bg-white"
                   />
@@ -256,15 +261,22 @@ export default async function ClientesPage({ searchParams }: ClientesPageProps) 
                 </SubmitButton>
               </form>
 
-              <form action={deactivateClient}>
+              <form action={selectedClient.is_active ? deactivateClient : activateClient}>
                 <input type="hidden" name="clientId" value={selectedClient.id} />
                 <SubmitButton
-                  disabled={!selectedClient.is_active}
-                  pendingLabel="Desactivando..."
-                  confirmMessage={`Seguro que quieres desactivar a ${selectedClient.full_name}?`}
-                  className="min-h-11 w-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:border-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400"
+                  pendingLabel={selectedClient.is_active ? "Desactivando..." : "Reactivando..."}
+                  confirmMessage={
+                    selectedClient.is_active
+                      ? `Seguro que quieres desactivar a ${selectedClient.full_name}?`
+                      : undefined
+                  }
+                  className={`min-h-11 w-full px-5 text-sm font-black transition-colors ${
+                    selectedClient.is_active
+                      ? "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
+                      : "bg-lime-400 text-zinc-950 hover:bg-lime-300"
+                  }`}
                 >
-                  Desactivar cliente
+                  {selectedClient.is_active ? "Desactivar cliente" : "Reactivar cliente"}
                 </SubmitButton>
               </form>
             </div>

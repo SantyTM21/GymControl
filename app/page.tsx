@@ -1,8 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getProfile } from "@/lib/auth/server";
 import { homeBenefits } from "@/lib/mock-data";
 
-export default function Home() {
+type HomePageProps = {
+  searchParams?: {
+    error?: string;
+    success?: string;
+  };
+};
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const profile = await getProfile();
+  const primaryAction = !profile
+    ? { href: "/register", label: "Comenzar ahora" }
+    : profile.role === "OWNER"
+      ? { href: "/dashboard", label: "Ir al dashboard" }
+      : { href: "/mi-rutina", label: "Abrir mi rutina" };
+  const secondaryAction = !profile
+    ? { href: "#beneficios", label: "Conocer mas" }
+    : profile.role === "OWNER"
+      ? { href: "/dashboard/rutinas", label: "Gestionar rutinas" }
+      : { href: "/mi-progreso", label: "Ver mi progreso" };
+
   return (
     <main>
       <section id="inicio" className="relative h-[calc(100svh-5rem)] min-h-[560px] max-h-[820px] overflow-hidden bg-zinc-900">
@@ -17,6 +37,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/55 sm:bg-black/45" />
         <div className="relative mx-auto flex h-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
           <div className="max-w-2xl text-white">
+            {searchParams?.error ? (
+              <p className="mb-5 border border-red-300 bg-red-950/80 px-4 py-3 text-sm font-semibold text-red-100">
+                {searchParams.error}
+              </p>
+            ) : null}
+            {searchParams?.success ? (
+              <p className="mb-5 border border-lime-300 bg-lime-950/80 px-4 py-3 text-sm font-semibold text-lime-100">
+                {searchParams.success}
+              </p>
+            ) : null}
             <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-lime-400 sm:text-sm">
               <span className="h-0.5 w-8 bg-lime-400" />
               Entrena. Registra. Superate.
@@ -29,16 +59,16 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/register"
+                href={primaryAction.href}
                 className="bg-lime-400 px-6 py-3.5 text-center text-sm font-bold text-zinc-950 transition-colors hover:bg-lime-300"
               >
-                Comenzar ahora
+                {primaryAction.label}
               </Link>
               <Link
-                href="#beneficios"
+                href={secondaryAction.href}
                 className="border border-white/60 px-6 py-3.5 text-center text-sm font-bold text-white transition-colors hover:border-white hover:bg-white hover:text-zinc-950"
               >
-                Conocer mas
+                {secondaryAction.label}
               </Link>
             </div>
           </div>
@@ -95,10 +125,10 @@ export default function Home() {
             </h2>
           </div>
           <Link
-            href="/register"
+            href={primaryAction.href}
             className="shrink-0 bg-zinc-950 px-7 py-4 text-sm font-bold text-white transition-colors hover:bg-zinc-800"
           >
-            Crear mi cuenta
+            {primaryAction.label}
           </Link>
         </div>
       </section>

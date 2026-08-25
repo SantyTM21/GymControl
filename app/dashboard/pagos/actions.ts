@@ -19,7 +19,12 @@ function validId(id: string) {
 }
 
 function validDate(value: string) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 function parseAmount(value: string) {
@@ -36,7 +41,7 @@ async function getMembershipClientId(membershipId: string) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToPayments("error", error?.message ?? "Selecciona una membresia valida.");
+    redirectToPayments("error", "Selecciona una membresia valida.");
   }
 
   return data.client_id as string;
@@ -78,11 +83,11 @@ export async function createPayment(formData: FormData) {
     payment_method: paymentMethod,
     notes: notes || null,
     status: "PAID",
-    paid_at: new Date(`${paymentDate}T12:00:00`).toISOString(),
+    paid_at: new Date(`${paymentDate}T12:00:00Z`).toISOString(),
   });
 
   if (error) {
-    redirectToPayments("error", error.message);
+    redirectToPayments("error", "No se pudo registrar el pago.");
   }
 
   revalidatePath("/dashboard/pagos");
@@ -110,7 +115,7 @@ export async function updatePayment(formData: FormData) {
   const clientId = await getMembershipClientId(membershipId);
   const now = new Date().toISOString();
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("payments")
     .update({
       client_id: clientId,
@@ -120,13 +125,15 @@ export async function updatePayment(formData: FormData) {
       payment_method: paymentMethod,
       notes: notes || null,
       status: "PAID",
-      paid_at: new Date(`${paymentDate}T12:00:00`).toISOString(),
+      paid_at: new Date(`${paymentDate}T12:00:00Z`).toISOString(),
       updated_at: now,
     })
-    .eq("id", paymentId);
+    .eq("id", paymentId)
+    .select("id")
+    .maybeSingle();
 
-  if (error) {
-    redirectToPayments("error", error.message);
+  if (error || !data) {
+    redirectToPayments("error", "No se pudo actualizar el pago.");
   }
 
   revalidatePath("/dashboard/pagos");
@@ -143,10 +150,15 @@ export async function deletePayment(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("payments").delete().eq("id", paymentId);
+  const { data, error } = await supabase
+    .from("payments")
+    .delete()
+    .eq("id", paymentId)
+    .select("id")
+    .maybeSingle();
 
-  if (error) {
-    redirectToPayments("error", error.message);
+  if (error || !data) {
+    redirectToPayments("error", "No se pudo eliminar el pago.");
   }
 
   revalidatePath("/dashboard/pagos");

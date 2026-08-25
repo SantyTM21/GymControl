@@ -95,6 +95,8 @@ function readRoutineForm(formData: FormData) {
 
 function readExerciseForm(formData: FormData) {
   const name = field(formData, "nombreEjercicio");
+  const muscleGroup = field(formData, "grupoMuscular");
+  const equipment = field(formData, "equipamiento");
   const sets = parsePositiveInt(field(formData, "series"));
   const reps = field(formData, "repeticiones");
   const suggestedWeight = parseOptionalWeight(field(formData, "pesoSugerido"));
@@ -111,6 +113,8 @@ function readExerciseForm(formData: FormData) {
 
   return {
     name,
+    muscle_group: muscleGroup || null,
+    equipment: equipment || null,
     sets,
     reps,
     suggested_weight: suggestedWeight,
@@ -129,7 +133,7 @@ async function ensureOwnRoutine(routineId: string, ownerId: string) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No puedes modificar esa rutina.");
+    redirectToRoutines("error", "No puedes modificar esa rutina.");
   }
 }
 
@@ -144,7 +148,7 @@ export async function createRoutine(formData: FormData) {
   });
 
   if (error) {
-    redirectToRoutines("error", error.message);
+    redirectToRoutines("error", "No se pudo crear la rutina.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -175,7 +179,7 @@ export async function updateRoutine(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No se pudo actualizar esa rutina.");
+    redirectToRoutines("error", "No se pudo actualizar esa rutina.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -205,7 +209,7 @@ export async function publishRoutine(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No se pudo publicar esa rutina.");
+    redirectToRoutines("error", "No se pudo publicar esa rutina.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -232,7 +236,7 @@ export async function deleteRoutine(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No se pudo eliminar esa rutina.");
+    redirectToRoutines("error", "No se pudo eliminar esa rutina.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -253,13 +257,42 @@ export async function createRoutineExercise(formData: FormData) {
   await ensureOwnRoutine(routineId, profile.id);
 
   const supabase = await createClient();
-  const { error } = await supabase.from("routine_exercises").insert({
+  const { data: lastExercise, error: positionError } = await supabase
+    .from("routine_exercises")
+    .select("position")
+    .eq("routine_id", routineId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (positionError) {
+    redirectToRoutines("error", "No se pudo calcular el orden del ejercicio.");
+  }
+
+  const { position, ...exerciseValues } = exercise;
+  const { data: createdExercise, error } = await supabase
+    .from("routine_exercises")
+    .insert({
     routine_id: routineId,
-    ...exercise,
+      ...exerciseValues,
+      position: (lastExercise?.position ?? 0) + 1,
+    })
+    .select("id")
+    .single();
+
+  if (error || !createdExercise) {
+    redirectToRoutines("error", "No se pudo agregar el ejercicio.");
+  }
+
+  const { error: reorderError } = await supabase.rpc("reorder_routine_exercise", {
+    target_exercise_id: createdExercise.id,
+    target_routine_id: routineId,
+    target_position: position,
   });
 
-  if (error) {
-    redirectToRoutines("error", error.message);
+  if (reorderError) {
+    await supabase.from("routine_exercises").delete().eq("id", createdExercise.id);
+    redirectToRoutines("error", "No se pudo aplicar el orden del ejercicio.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -280,16 +313,27 @@ export async function updateRoutineExercise(formData: FormData) {
   await ensureOwnRoutine(routineId, profile.id);
 
   const supabase = await createClient();
+  const { position, ...exerciseValues } = exercise;
+  const { error: reorderError } = await supabase.rpc("reorder_routine_exercise", {
+    target_exercise_id: exerciseId,
+    target_routine_id: routineId,
+    target_position: position,
+  });
+
+  if (reorderError) {
+    redirectToRoutines("error", "No se pudo cambiar el orden del ejercicio.");
+  }
+
   const { data, error } = await supabase
     .from("routine_exercises")
-    .update(exercise)
+    .update(exerciseValues)
     .eq("id", exerciseId)
     .eq("routine_id", routineId)
     .select("id")
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No se pudo actualizar ese ejercicio.");
+    redirectToRoutines("error", "No se pudo actualizar ese ejercicio.");
   }
 
   revalidatePath("/dashboard/rutinas");
@@ -318,7 +362,7 @@ export async function deleteRoutineExercise(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToRoutines("error", error?.message ?? "No se pudo eliminar ese ejercicio.");
+    redirectToRoutines("error", "No se pudo eliminar ese ejercicio.");
   }
 
   revalidatePath("/dashboard/rutinas");

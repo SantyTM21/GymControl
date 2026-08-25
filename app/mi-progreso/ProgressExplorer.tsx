@@ -63,11 +63,13 @@ export function ProgressExplorer({ logs }: ProgressExplorerProps) {
     .filter((log) => log.exerciseId === selectedExerciseId)
     .sort(byDateAscending);
   const maxWeight = Math.max(...selectedLogs.map((log) => log.pesoUtilizado), 0);
-  const minWeight = Math.min(...selectedLogs.map((log) => log.pesoUtilizado), 0);
+  const minWeight = selectedLogs.length
+    ? Math.min(...selectedLogs.map((log) => log.pesoUtilizado))
+    : 0;
   const range = Math.max(maxWeight - minWeight, 1);
   const points = selectedLogs.map((log, index) => {
     const x = selectedLogs.length === 1 ? 50 : (index / (selectedLogs.length - 1)) * 100;
-    const y = 90 - ((log.pesoUtilizado - minWeight) / range) * 70;
+    const y = maxWeight === minWeight ? 55 : 90 - ((log.pesoUtilizado - minWeight) / range) * 70;
     return { ...log, x, y };
   });
   const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");

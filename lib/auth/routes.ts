@@ -6,6 +6,7 @@ export const PRIVATE_ROUTES = [
   "/mi-rutina",
   "/mi-progreso",
   "/mi-membresia",
+  "/mis-pagos",
 ] as const;
 
 export const ROLE_ROUTES: Record<UserRole, readonly string[]> = {
@@ -15,7 +16,7 @@ export const ROLE_ROUTES: Record<UserRole, readonly string[]> = {
     "/dashboard/pagos",
     "/dashboard/rutinas",
   ],
-  CLIENT: ["/mi-rutina", "/mi-progreso", "/mi-membresia"],
+  CLIENT: ["/mi-rutina", "/mi-progreso", "/mi-membresia", "/mis-pagos"],
 };
 
 export function matchesRoute(pathname: string, route: string) {

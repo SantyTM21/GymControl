@@ -24,6 +24,22 @@ function validId(id: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 }
 
+function validEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
+}
+
+function validAvatarUrl(value: string) {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export async function updateClient(formData: FormData) {
   await requireRole(["OWNER"]);
 
@@ -36,12 +52,16 @@ export async function updateClient(formData: FormData) {
     redirectToClients("error", "Cliente invalido.");
   }
 
-  if (fullName.length < 2) {
+  if (fullName.length < 2 || fullName.length > 100) {
     redirectToClients("error", "Ingresa un nombre valido.", clientId);
   }
 
-  if (!email || !email.includes("@")) {
+  if (!validEmail(email)) {
     redirectToClients("error", "Ingresa un correo electronico valido.", clientId);
+  }
+
+  if (!validAvatarUrl(avatarUrl)) {
+    redirectToClients("error", "El avatar debe ser una URL HTTPS valida.", clientId);
   }
 
   const supabase = await createClient();
@@ -59,7 +79,7 @@ export async function updateClient(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToClients("error", error?.message ?? "No se pudo actualizar el cliente.", clientId);
+    redirectToClients("error", "No se pudo actualizar el cliente.", clientId);
   }
 
   revalidatePath("/dashboard/clientes");
@@ -90,9 +110,39 @@ export async function deactivateClient(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    redirectToClients("error", error?.message ?? "No se pudo desactivar el cliente.", clientId);
+    redirectToClients("error", "No se pudo desactivar el cliente.", clientId);
   }
 
   revalidatePath("/dashboard/clientes");
   redirectToClients("success", "Cliente desactivado correctamente.", clientId);
+}
+
+export async function activateClient(formData: FormData) {
+  await requireRole(["OWNER"]);
+
+  const clientId = field(formData, "clientId");
+
+  if (!validId(clientId)) {
+    redirectToClients("error", "Cliente invalido.");
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({
+      is_active: true,
+      deactivated_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", clientId)
+    .eq("role", "CLIENT")
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    redirectToClients("error", "No se pudo reactivar el cliente.", clientId);
+  }
+
+  revalidatePath("/dashboard/clientes");
+  redirectToClients("success", "Cliente reactivado correctamente.", clientId);
 }

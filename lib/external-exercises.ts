@@ -87,7 +87,7 @@ function isExerciseResponse(value: unknown): value is WgerExerciseResponse {
 }
 
 function normalizeDescription(description: string): string {
-  const normalized = description.replace(/\s+/g, " ").trim();
+  const normalized = description.replace(/[*_#`]/g, "").replace(/\s+/g, " ").trim();
 
   if (!normalized) {
     return "Descripcion no disponible para este ejercicio.";

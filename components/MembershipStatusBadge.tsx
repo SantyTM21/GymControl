@@ -11,6 +11,10 @@ const indicatorStyles: Record<MembershipIndicator, { label: string; className: s
     label: "Activa",
     className: "bg-lime-100 text-lime-800",
   },
+  paused: {
+    label: "Pausada",
+    className: "bg-amber-100 text-amber-800",
+  },
   expiring: {
     label: "Proxima a vencer",
     className: "bg-amber-100 text-amber-800",

@@ -396,7 +396,7 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
 
                     <form
                       action={createRoutineExercise}
-                      className="mt-4 grid gap-3 border border-zinc-200 bg-zinc-50 p-4 lg:grid-cols-[minmax(180px,1fr)_90px_120px_120px_120px_90px]"
+                      className="mt-4 grid gap-3 border border-zinc-200 bg-zinc-50 p-4 sm:grid-cols-2 lg:grid-cols-4"
                     >
                       <input type="hidden" name="routineId" value={routine.id} />
                       <div>
@@ -409,6 +409,28 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                           required
                           minLength={2}
                           className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Grupo muscular
+                        </label>
+                        <input
+                          name="grupoMuscular"
+                          type="text"
+                          placeholder="Opcional"
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                          Equipamiento
+                        </label>
+                        <input
+                          name="equipamiento"
+                          type="text"
+                          placeholder="Opcional"
+                          className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600"
                         />
                       </div>
                       <div>
@@ -478,7 +500,7 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                       </div>
                       <SubmitButton
                         pendingLabel="Agregando..."
-                        className="min-h-10 bg-lime-400 px-4 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300 lg:col-span-6"
+                        className="min-h-10 bg-lime-400 px-4 text-sm font-black text-zinc-950 transition-colors hover:bg-lime-300 sm:col-span-2 lg:col-span-4"
                       >
                         Agregar ejercicio
                       </SubmitButton>
@@ -489,7 +511,7 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                         <div key={exercise.id} className="grid gap-3 bg-white p-4">
                           <form
                             action={updateRoutineExercise}
-                            className="grid gap-3 lg:grid-cols-[minmax(180px,1fr)_90px_120px_120px_120px_90px]"
+                            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
                           >
                             <input type="hidden" name="routineId" value={routine.id} />
                             <input type="hidden" name="exerciseId" value={exercise.id} />
@@ -503,6 +525,28 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                                 required
                                 minLength={2}
                                 defaultValue={exercise.nombreEjercicio}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Grupo muscular
+                              </label>
+                              <input
+                                name="grupoMuscular"
+                                type="text"
+                                defaultValue={exercise.grupoMuscular ?? ""}
+                                className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                                Equipamiento
+                              </label>
+                              <input
+                                name="equipamiento"
+                                type="text"
+                                defaultValue={exercise.equipamiento ?? ""}
                                 className="mt-2 min-h-10 w-full border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-950 outline-none focus:border-lime-600"
                               />
                             </div>
@@ -575,7 +619,7 @@ export default async function DashboardRutinasPage({ searchParams }: DashboardRu
                             </div>
                             <SubmitButton
                               pendingLabel="Guardando..."
-                              className="min-h-10 bg-zinc-950 px-4 text-sm font-black text-white transition-colors hover:bg-zinc-800 lg:col-span-6"
+                              className="min-h-10 bg-zinc-950 px-4 text-sm font-black text-white transition-colors hover:bg-zinc-800 sm:col-span-2 lg:col-span-4"
                             >
                               Guardar ejercicio
                             </SubmitButton>

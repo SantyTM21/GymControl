@@ -29,8 +29,17 @@ function parsePrice(value: string) {
   return Number.isFinite(price) && price >= 0 ? price : null;
 }
 
+function validDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 function validateDates(startsAt: string, endsAt: string) {
-  return Boolean(startsAt && endsAt && endsAt >= startsAt);
+  return validDate(startsAt) && validDate(endsAt) && endsAt >= startsAt;
 }
 
 async function ensureClient(clientId: string) {
@@ -92,7 +101,7 @@ export async function createMembership(formData: FormData) {
   });
 
   if (error) {
-    redirectToMemberships("error", error.message);
+    redirectToMemberships("error", "No se pudo crear la membresia.");
   }
 
   revalidatePath("/dashboard/membresias");
@@ -119,7 +128,7 @@ export async function updateMembership(formData: FormData) {
 
   const now = new Date().toISOString();
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("memberships")
     .update({
       plan_name: planName,
@@ -129,10 +138,12 @@ export async function updateMembership(formData: FormData) {
       price,
       updated_at: now,
     })
-    .eq("id", membershipId);
+    .eq("id", membershipId)
+    .select("id")
+    .maybeSingle();
 
-  if (error) {
-    redirectToMemberships("error", error.message);
+  if (error || !data) {
+    redirectToMemberships("error", "No se pudo actualizar la membresia.");
   }
 
   revalidatePath("/dashboard/membresias");
@@ -157,7 +168,7 @@ export async function renewMembership(formData: FormData) {
 
   const now = new Date().toISOString();
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("memberships")
     .update({
       starts_at: startsAt,
@@ -166,10 +177,12 @@ export async function renewMembership(formData: FormData) {
       status: "ACTIVE",
       updated_at: now,
     })
-    .eq("id", membershipId);
+    .eq("id", membershipId)
+    .select("id")
+    .maybeSingle();
 
-  if (error) {
-    redirectToMemberships("error", error.message);
+  if (error || !data) {
+    redirectToMemberships("error", "No se pudo renovar la membresia.");
   }
 
   revalidatePath("/dashboard/membresias");

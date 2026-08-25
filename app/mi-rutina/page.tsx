@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 type MiRutinaPageProps = {
   searchParams?: {
     error?: string;
+    reset?: string;
     success?: string;
   };
 };
@@ -92,7 +93,11 @@ export default async function MiRutinaPage({ searchParams }: MiRutinaPageProps) 
             </p>
           </div>
 
-          <form action={createWorkoutLog} className="space-y-4 p-5">
+          <form
+            key={searchParams?.reset ?? "workout-form"}
+            action={createWorkoutLog}
+            className="space-y-4 p-5"
+          >
             {searchParams?.error ? (
               <p className="border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                 {searchParams.error}
@@ -192,6 +197,20 @@ export default async function MiRutinaPage({ searchParams }: MiRutinaPageProps) 
               />
             </div>
 
+            <div>
+              <label htmlFor="notes" className="text-sm font-bold text-zinc-800">
+                Notas
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows={3}
+                maxLength={1000}
+                placeholder="Opcional"
+                className="mt-2 w-full resize-y border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-950 outline-none placeholder:text-zinc-400 focus:border-lime-600 focus:bg-white"
+              />
+            </div>
+
             <SubmitButton
               pendingLabel="Registrando..."
               disabled={exerciseOptions.length === 0}
@@ -219,6 +238,9 @@ export default async function MiRutinaPage({ searchParams }: MiRutinaPageProps) 
                 <div>
                   <p className="font-bold text-zinc-950">{log.exerciseName}</p>
                   <p className="mt-1 text-sm text-zinc-500">{log.routineName}</p>
+                  {log.notas ? (
+                    <p className="mt-2 text-sm leading-6 text-zinc-600">{log.notas}</p>
+                  ) : null}
                 </div>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">Fecha</p>

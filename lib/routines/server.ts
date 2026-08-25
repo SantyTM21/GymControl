@@ -1,97 +1,100 @@
-import "server-only";
+'server-only'
 
-import { requireProfile } from "@/lib/auth/server";
-import { createClient } from "@/lib/supabase/server";
-import type {
-  Routine,
-  RoutineExercise,
-  RoutineLevel,
-  RoutineObjective,
-} from "@/types/domain";
+import { requireProfile } from '@/lib/auth/server'
+import { createClient } from '@/lib/supabase/server'
+import type { Routine, RoutineExercise, RoutineLevel, RoutineObjective } from '@/types/domain'
 
-type DbRoutineLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-type DbRoutineObjective = "STRENGTH" | "HYPERTROPHY" | "WEIGHT_LOSS" | "CONDITIONING";
+type DbRoutineLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
+type DbRoutineObjective = 'STRENGTH' | 'HYPERTROPHY' | 'WEIGHT_LOSS' | 'CONDITIONING'
 
 type DbRoutine = {
-  id: string;
-  owner_id: string;
-  created_by: string;
-  name: string;
-  description: string | null;
-  level: DbRoutineLevel;
-  objective: DbRoutineObjective;
-  duration_minutes: number;
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-};
+  id: string
+  owner_id: string
+  created_by: string
+  name: string
+  description: string | null
+  level: DbRoutineLevel
+  objective: DbRoutineObjective
+  duration_minutes: number
+  is_published: boolean
+  created_at: string
+  updated_at: string
+}
 
 type DbRoutineExercise = {
-  id: string;
-  routine_id: string;
-  name: string;
-  sets: number;
-  reps: string;
-  suggested_weight: number | null;
-  rest_seconds: number;
-  position: number;
-};
+  id: string
+  routine_id: string
+  name: string
+  muscle_group: string | null
+  equipment: string | null
+  sets: number
+  reps: string
+  suggested_weight: number | null
+  rest_seconds: number
+  position: number
+}
 
 export type RoutineWithExercises = Routine & {
-  ejercicios: RoutineExercise[];
-};
+  ejercicios: RoutineExercise[]
+}
 
 const routineColumns =
-  "id, owner_id, created_by, name, description, level, objective, duration_minutes, is_published, created_at, updated_at";
+  'id, owner_id, created_by, name, description, level, objective, duration_minutes, is_published, created_at, updated_at'
 const exerciseColumns =
-  "id, routine_id, name, sets, reps, suggested_weight, rest_seconds, position";
+  'id, routine_id, name, muscle_group, equipment, sets, reps, suggested_weight, rest_seconds, position'
+
+function validId(id: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    id
+  )
+}
 
 const dbLevelToApp: Record<DbRoutineLevel, RoutineLevel> = {
-  BEGINNER: "PRINCIPIANTE",
-  INTERMEDIATE: "INTERMEDIO",
-  ADVANCED: "AVANZADO",
-};
+  BEGINNER: 'PRINCIPIANTE',
+  INTERMEDIATE: 'INTERMEDIO',
+  ADVANCED: 'AVANZADO'
+}
 
 const appLevelToDb: Record<RoutineLevel, DbRoutineLevel> = {
-  PRINCIPIANTE: "BEGINNER",
-  INTERMEDIO: "INTERMEDIATE",
-  AVANZADO: "ADVANCED",
-};
+  PRINCIPIANTE: 'BEGINNER',
+  INTERMEDIO: 'INTERMEDIATE',
+  AVANZADO: 'ADVANCED'
+}
 
 const dbObjectiveToApp: Record<DbRoutineObjective, RoutineObjective> = {
-  STRENGTH: "FUERZA",
-  HYPERTROPHY: "HIPERTROFIA",
-  WEIGHT_LOSS: "PERDIDA_PESO",
-  CONDITIONING: "ACONDICIONAMIENTO",
-};
+  STRENGTH: 'FUERZA',
+  HYPERTROPHY: 'HIPERTROFIA',
+  WEIGHT_LOSS: 'PERDIDA_PESO',
+  CONDITIONING: 'ACONDICIONAMIENTO'
+}
 
 const appObjectiveToDb: Record<RoutineObjective, DbRoutineObjective> = {
-  FUERZA: "STRENGTH",
-  HIPERTROFIA: "HYPERTROPHY",
-  PERDIDA_PESO: "WEIGHT_LOSS",
-  ACONDICIONAMIENTO: "CONDITIONING",
-};
+  FUERZA: 'STRENGTH',
+  HIPERTROFIA: 'HYPERTROPHY',
+  PERDIDA_PESO: 'WEIGHT_LOSS',
+  ACONDICIONAMIENTO: 'CONDITIONING'
+}
 
 export function routineLevelToDb(level: RoutineLevel) {
-  return appLevelToDb[level];
+  return appLevelToDb[level]
 }
 
 export function routineObjectiveToDb(objective: RoutineObjective) {
-  return appObjectiveToDb[objective];
+  return appObjectiveToDb[objective]
 }
 
 function toRoutine(routine: DbRoutine): Routine {
   return {
     id: routine.id,
     nombre: routine.name,
-    descripcion: routine.description ?? "",
+    descripcion: routine.description ?? '',
     nivel: dbLevelToApp[routine.level],
     objetivo: dbObjectiveToApp[routine.objective],
     duracionMinutos: routine.duration_minutes,
     createdBy: routine.created_by,
     createdAt: routine.created_at,
-    publicado: routine.is_published,
-  };
+    publicado: routine.is_published
+  }
 }
 
 function toRoutineExercise(exercise: DbRoutineExercise): RoutineExercise {
@@ -99,103 +102,109 @@ function toRoutineExercise(exercise: DbRoutineExercise): RoutineExercise {
     id: exercise.id,
     routineId: exercise.routine_id,
     nombreEjercicio: exercise.name,
+    grupoMuscular: exercise.muscle_group,
+    equipamiento: exercise.equipment,
     series: exercise.sets,
     repeticiones: exercise.reps,
     pesoSugerido: exercise.suggested_weight,
     descansoSegundos: exercise.rest_seconds,
-    orden: exercise.position,
-  };
+    orden: exercise.position
+  }
 }
 
 async function listExercisesByRoutineIds(routineIds: string[]) {
   if (routineIds.length === 0) {
-    return new Map<string, RoutineExercise[]>();
+    return new Map<string, RoutineExercise[]>()
   }
 
-  const supabase = await createClient();
+  const supabase = await createClient()
   const { data, error } = await supabase
-    .from("routine_exercises")
+    .from('routine_exercises')
     .select(exerciseColumns)
-    .in("routine_id", routineIds)
-    .order("position", { ascending: true });
+    .in('routine_id', routineIds)
+    .order('position', { ascending: true })
 
   if (error) {
-    throw new Error(`No se pudieron listar ejercicios: ${error.message}`);
+    throw new Error(`No se pudieron listar ejercicios: ${error.message}`)
   }
 
-  const byRoutine = new Map<string, RoutineExercise[]>();
+  const byRoutine = new Map<string, RoutineExercise[]>()
 
   for (const exercise of ((data ?? []) as DbRoutineExercise[]).map(toRoutineExercise)) {
-    byRoutine.set(exercise.routineId, [...(byRoutine.get(exercise.routineId) ?? []), exercise]);
+    byRoutine.set(exercise.routineId, [...(byRoutine.get(exercise.routineId) ?? []), exercise])
   }
 
-  return byRoutine;
+  return byRoutine
 }
 
 export async function listPublishedRoutines() {
-  const supabase = await createClient();
+  const supabase = await createClient()
   const { data, error } = await supabase
-    .from("routines")
+    .from('routines')
     .select(routineColumns)
-    .eq("is_published", true)
-    .order("created_at", { ascending: false });
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
 
   if (error) {
-    throw new Error(`No se pudieron listar rutinas: ${error.message}`);
+    throw new Error(`No se pudieron listar rutinas: ${error.message}`)
   }
 
-  return ((data ?? []) as DbRoutine[]).map(toRoutine);
+  return ((data ?? []) as DbRoutine[]).map(toRoutine)
 }
 
 export async function getPublishedRoutine(id: string) {
-  const supabase = await createClient();
+  if (!validId(id)) {
+    return null
+  }
+
+  const supabase = await createClient()
   const { data, error } = await supabase
-    .from("routines")
+    .from('routines')
     .select(routineColumns)
-    .eq("id", id)
-    .eq("is_published", true)
-    .maybeSingle();
+    .eq('id', id)
+    .eq('is_published', true)
+    .maybeSingle()
 
   if (error) {
-    throw new Error(`No se pudo consultar la rutina: ${error.message}`);
+    throw new Error(`No se pudo consultar la rutina: ${error.message}`)
   }
 
   if (!data) {
-    return null;
+    return null
   }
 
-  const routine = toRoutine(data as DbRoutine);
-  const exercises = await listExercisesByRoutineIds([routine.id]);
+  const routine = toRoutine(data as DbRoutine)
+  const exercises = await listExercisesByRoutineIds([routine.id])
 
   return {
     ...routine,
-    ejercicios: exercises.get(routine.id) ?? [],
-  } satisfies RoutineWithExercises;
+    ejercicios: exercises.get(routine.id) ?? []
+  } satisfies RoutineWithExercises
 }
 
 export async function listOwnerRoutines() {
-  const profile = await requireProfile();
+  const profile = await requireProfile()
 
-  if (profile.role !== "OWNER") {
-    return [];
+  if (profile.role !== 'OWNER') {
+    return []
   }
 
-  const supabase = await createClient();
+  const supabase = await createClient()
   const { data, error } = await supabase
-    .from("routines")
+    .from('routines')
     .select(routineColumns)
-    .eq("created_by", profile.id)
-    .order("created_at", { ascending: false });
+    .eq('created_by', profile.id)
+    .order('created_at', { ascending: false })
 
   if (error) {
-    throw new Error(`No se pudieron listar tus rutinas: ${error.message}`);
+    throw new Error(`No se pudieron listar tus rutinas: ${error.message}`)
   }
 
-  const routines = ((data ?? []) as DbRoutine[]).map(toRoutine);
-  const exercises = await listExercisesByRoutineIds(routines.map((routine) => routine.id));
+  const routines = ((data ?? []) as DbRoutine[]).map(toRoutine)
+  const exercises = await listExercisesByRoutineIds(routines.map((routine) => routine.id))
 
   return routines.map((routine) => ({
     ...routine,
-    ejercicios: exercises.get(routine.id) ?? [],
-  })) satisfies RoutineWithExercises[];
+    ejercicios: exercises.get(routine.id) ?? []
+  })) satisfies RoutineWithExercises[]
 }

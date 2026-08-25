@@ -6,7 +6,7 @@ export type RoutineObjective =
   | "HIPERTROFIA"
   | "PERDIDA_PESO"
   | "ACONDICIONAMIENTO";
-export const MEMBERSHIP_STATUSES = ["ACTIVE", "EXPIRED", "CANCELLED"] as const;
+export const MEMBERSHIP_STATUSES = ["ACTIVE", "PAUSED", "EXPIRED", "CANCELLED"] as const;
 export type MembershipStatus = (typeof MEMBERSHIP_STATUSES)[number];
 export type PaymentStatus = "Pagado" | "Pendiente" | "Fallido";
 
@@ -35,6 +35,8 @@ export interface RoutineExercise {
   id: string;
   routineId: string;
   nombreEjercicio: string;
+  grupoMuscular: string | null;
+  equipamiento: string | null;
   series: number;
   repeticiones: string;
   pesoSugerido: number | null;

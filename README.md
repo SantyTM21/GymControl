@@ -380,7 +380,7 @@ https://gym-control-six.vercel.app
 ## Enlace Del Video
 
 ```txt
-<Proximamente>
+https://youtu.be/Mlrb-rDC-oc
 ```
 
 ## Autor
